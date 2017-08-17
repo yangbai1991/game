@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="initial-scale=1, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0, width=device-width">
+  <title>Demo</title>
+  <style type="text/css">
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #f8f8f8;
+    }
+    .game-panel {
+      width: 375px;
+      margin: 0 auto;
+      height: 667px;
+      position: relative;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-panel">
+    <canvas id="canvas" width="375" height="667"></canvas>
+  </div>
+  <script>
+    window.onload = function () {
+      var app = {
+        doc: document,
+        canvas: document.getElementById('canvas'),
+        ctx: this.canvas.getContext('2d'),
+        bg: null,
+        bgWidth: 375,
+        bgHeight: 1126,
+        rollCount: 0,
+        rollDistance: 0,
+        loadImgs: {},
+
+        _loadImgs() {
+          var _this = this;
+          var imgs = ['static/img/bg.jpg', 'static/img/player.png'];
+
+          imgs.forEach(function(src) {
+            var image = new Image();
+
+            image.onload = function () {
+              _this.loadImgs[src] = image;
+            }
+
+            image.src = src;
+          });
+        },
+
+        _drawBg() {
+          var _this = this;
+          _this.ctx.drawImage(_this.loadImgs['static/img/bg.jpg'], 0, 0, _this.bgWidth, _this.bgHeight);
+        },
+
+        _drawPlayer() {
+          var _this = this;
+          var w = 80;
+          var h = 80;
+          var left = (_this.bgWidth - w) / 2;
+          var top = (_this.bgHeight - h) / 2;
+          this.ctx.drawImage(_this.loadImgs['static/img/player.png'], left, top, w, h);
+        },
+
+        rollBg() {
+          var _this = this;
+          var bg = _this.loadImgs['static/img/bg.jpg'];
+          if (_this.rollDistance >= _this.bgHeight) {
+            _this.rollCount = 0;
+          }
+          _this.rollCount++;
+          _this.rollDistance = _this.rollCount * 2;
+          _this.ctx.drawImage(bg, 0, _this.rollDistance - _this.bgHeight, _this.bgWidth, _this.bgHeight);
+          _this.ctx.drawImage(bg, 0, _this.rollDistance, _this.bgWidth, _this.bgHeight);
+        },
+
+        run() {
+          var _this = this;
+          _this.ctx.clearRect(0, 0, _this.bgWidth, _this.bgHeight);
+          this.rollBg();
+          this._drawPlayer();
+          setTimeout(function () {
+            _this.run();
+          }, Math.floor(1000/66));
+        },
+
+        init() {
+          var _this = this;
+          this._loadImgs();
+          setTimeout(function () {
+            _this.run();
+          }, 800);
+        }
+      };
+
+      app.init();
+      // var doc = document;
+      // var canvas = document.getElementById('canvas');
+      // var ctx = canvas.getContext('2d');
+      // var bd = 375;
+      // var bh = 1126;
+      // var count = 0;
+      // var distance = 0;
+
+      // var bg = new Image();
+      // bg.onload = function () {
+      //   ctx.drawImage(bg, 0, 0, bd, bh);
+      // }
+      // bg.src = 'static/img/bg.jpg';
+
+      // function drawImage (src, y) {
+      //   var image = new Image();
+        
+      //   image.onload = function () {
+      //     ctx.drawImage(image, 0, y || 0, bd, bh);
+      //   }
+
+      //   image.src = src;
+      // }
+
+      // function run() {
+      //   ctx.clearRect(0, 0,bd, bh);
+      //   if (distance >= bh) {
+      //     count = 0;
+      //   }
+      //   count++;
+      //   distance = count * 2;
+      //   ctx.drawImage(bg, 0, distance - bh, bd, bh);
+      //   ctx.drawImage(bg, 0, distance, bd, bh);
+      //   setTimeout(function () {
+      //     run();
+      //   }, Math.floor(1000/66));
+      // }
+
+      //run();
+    }
+  </script>
+</body>
+</html>
