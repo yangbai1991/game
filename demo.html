@@ -30,12 +30,21 @@
         doc: document,
         canvas: document.getElementById('canvas'),
         ctx: this.canvas.getContext('2d'),
+        w: 375,
+        h: 667,
+        pW: 80,
+        pH: 80,
         bg: null,
         bgWidth: 375,
         bgHeight: 1126,
         rollCount: 0,
         rollDistance: 0,
         loadImgs: {},
+        pLeft: 0,
+        pTop: 0,
+        move: false,
+        dL: 0,
+        dT: 0,
 
         _loadImgs() {
           var _this = this;
@@ -58,12 +67,9 @@
         },
 
         _drawPlayer() {
-          var _this = this;
-          var w = 80;
-          var h = 80;
-          var left = (_this.bgWidth - w) / 2;
-          var top = (_this.bgHeight - h) / 2;
-          this.ctx.drawImage(_this.loadImgs['static/img/player.png'], left, top, w, h);
+          let _this = this;
+          let image = _this.loadImgs['static/img/player.png'];
+          _this.ctx.drawImage(image, _this.pLeft, _this.pTop, 80, 80);
         },
 
         rollBg() {
@@ -88,55 +94,52 @@
           }, Math.floor(1000/66));
         },
 
+        bind() {
+          var _this = this;
+          canvas.addEventListener('touchstart', function (e) {
+            _this.move = true;
+            _this.dL = e.changedTouches[0].clientX - _this.pLeft;
+            _this.dT = e.changedTouches[0].clientY - _this.pTop;
+          });
+          canvas.addEventListener('touchmove', function (e) {
+            if (!_this.move) {
+              return;
+            }
+            let {clientX, clientY} = e.changedTouches[0];
+            _this.pLeft = clientX - _this.dL;
+            if (_this.w - clientX < _this.pW) {
+              _this.pLeft = _this.w - _this.pW;
+            }
+            if (clientX - _this.dL <= 0) {
+              _this.pLeft = 0;
+            }
+
+            _this.pTop = clientY - _this.dT
+            if (_this.h - clientY < _this.pH) {
+              _this.pTop = _this.h - _this.pH;
+            }
+            if (clientY - _this.dT <= 0) {
+              _this.pTop = 0;
+            }
+          });
+          canvas.addEventListener('touchend', function (e) {
+            _this.move = false;
+          });
+        },
+
         init() {
           var _this = this;
+          _this.pLeft = (_this.bgWidth - _this.pW) / 2;
+          _this.pTop = (_this.bgHeight - _this.pH) / 2;
           this._loadImgs();
           setTimeout(function () {
             _this.run();
+            _this.bind();
           }, 800);
         }
       };
 
       app.init();
-      // var doc = document;
-      // var canvas = document.getElementById('canvas');
-      // var ctx = canvas.getContext('2d');
-      // var bd = 375;
-      // var bh = 1126;
-      // var count = 0;
-      // var distance = 0;
-
-      // var bg = new Image();
-      // bg.onload = function () {
-      //   ctx.drawImage(bg, 0, 0, bd, bh);
-      // }
-      // bg.src = 'static/img/bg.jpg';
-
-      // function drawImage (src, y) {
-      //   var image = new Image();
-        
-      //   image.onload = function () {
-      //     ctx.drawImage(image, 0, y || 0, bd, bh);
-      //   }
-
-      //   image.src = src;
-      // }
-
-      // function run() {
-      //   ctx.clearRect(0, 0,bd, bh);
-      //   if (distance >= bh) {
-      //     count = 0;
-      //   }
-      //   count++;
-      //   distance = count * 2;
-      //   ctx.drawImage(bg, 0, distance - bh, bd, bh);
-      //   ctx.drawImage(bg, 0, distance, bd, bh);
-      //   setTimeout(function () {
-      //     run();
-      //   }, Math.floor(1000/66));
-      // }
-
-      //run();
     }
   </script>
 </body>
