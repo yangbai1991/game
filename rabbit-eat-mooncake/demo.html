@@ -42,13 +42,15 @@
         loadImgs: {},
         pLeft: 0,
         pTop: 0,
+        mLefts: [],
+        mTops: [],
         move: false,
         dL: 0,
         dT: 0,
 
         _loadImgs() {
           var _this = this;
-          var imgs = ['static/img/bg.jpg', 'static/img/player.png'];
+          var imgs = ['static/img/bg.jpg', 'static/img/player.png', 'static/img/food1.png', 'static/img/food2.png'];
 
           imgs.forEach(function(src) {
             var image = new Image();
@@ -72,6 +74,12 @@
           _this.ctx.drawImage(image, _this.pLeft, _this.pTop, 80, 80);
         },
 
+        _drawMooncake(left, top) {
+          let _this = this;
+          let image = _this.loadImgs['static/img/food1.png'];
+          _this.ctx.drawImage(image, left, top, 50, 50);
+        },
+
         rollBg() {
           var _this = this;
           var bg = _this.loadImgs['static/img/bg.jpg'];
@@ -87,8 +95,14 @@
         run() {
           var _this = this;
           _this.ctx.clearRect(0, 0, _this.bgWidth, _this.bgHeight);
-          this.rollBg();
-          this._drawPlayer();
+          _this.rollBg();
+          _this._drawPlayer();
+          for (let i=0; i<_this.mLefts.length; i++) {
+            if (_this.mTops[i] < _this.h) {
+              _this._drawMooncake(_this.mLefts[i], _this.mTops[i]);
+              _this.mTops[i]++;
+            }
+          }
           setTimeout(function () {
             _this.run();
           }, Math.floor(1000/66));
@@ -129,6 +143,10 @@
 
         init() {
           var _this = this;
+          for (let i=1; i<=100; i++) {
+            _this.mLefts.push(Math.floor(Math.random() * (_this.w - 50)));
+            _this.mTops.push(-50 * i);
+          }
           _this.pLeft = (_this.bgWidth - _this.pW) / 2;
           _this.pTop = (_this.bgHeight - _this.pH) / 2;
           this._loadImgs();
