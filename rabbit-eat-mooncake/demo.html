@@ -97,6 +97,10 @@
           _this.ctx.clearRect(0, 0, _this.bgWidth, _this.bgHeight);
           _this.rollBg();
           _this._drawPlayer();
+          if (Math.random() * 50 > 49) {
+            _this.mLefts.push(Math.floor(Math.random() * (_this.w - 50)));
+            _this.mTops.push(-50 + (_this.mTops.length * -30));
+          }
           for (let i=0; i<_this.mLefts.length; i++) {
             if (_this.mTops[i] < _this.h) {
               _this._drawMooncake(_this.mLefts[i], _this.mTops[i]);
@@ -146,10 +150,6 @@
 
         init() {
           var _this = this;
-          for (let i=1; i<=100; i++) {
-            _this.mLefts.push(Math.floor(Math.random() * (_this.w - 50)));
-            _this.mTops.push(-50 * i);
-          }
           _this.pLeft = (_this.bgWidth - _this.pW) / 2;
           _this.pTop = (_this.bgHeight - _this.pH) / 2;
           this._loadImgs();
