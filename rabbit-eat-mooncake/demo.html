@@ -44,9 +44,11 @@
         pTop: 0,
         mLefts: [],
         mTops: [],
+        mTypes: [],
         move: false,
         dL: 0,
         dT: 0,
+        handler: null,
 
         _loadImgs() {
           var _this = this;
@@ -74,9 +76,9 @@
           _this.ctx.drawImage(image, _this.pLeft, _this.pTop, 80, 80);
         },
 
-        _drawMooncake(left, top) {
+        _drawMooncake(left, top, type) {
           let _this = this;
-          let image = _this.loadImgs['static/img/food1.png'];
+          let image = _this.loadImgs['static/img/food' + type + '.png'];
           _this.ctx.drawImage(image, left, top, 50, 50);
         },
 
@@ -94,22 +96,36 @@
 
         run() {
           var _this = this;
+          const mLefts = _this.mLefts;
+          const mTops = _this.mTops;
           _this.ctx.clearRect(0, 0, _this.bgWidth, _this.bgHeight);
           _this.rollBg();
           _this._drawPlayer();
           if (Math.random() * 50 > 49) {
             _this.mLefts.push(Math.floor(Math.random() * (_this.w - 50)));
-            _this.mTops.push(-50 + (_this.mTops.length * -30));
+            _this.mTops.push(-50 + _this.mTops.length * -50);
+            _this.mTypes.push(Math.floor(Math.random() * 2) + 1);
           }
-          for (let i=0; i<_this.mLefts.length; i++) {
+          for (let i=0; i<mLefts.length; i++) {
             if (_this.mTops[i] < _this.h) {
-              _this._drawMooncake(_this.mLefts[i], _this.mTops[i]);
+              _this._drawMooncake(_this.mLefts[i], _this.mTops[i], _this.mTypes[i]);
               _this.mTops[i]++;
             }
           }
-          setTimeout(function () {
+          _this.handler = window.requestAnimationFrame(() => {
             _this.run();
-          }, Math.floor(1000/66));
+          });
+          for (let i=0; i<mLefts.length; i++) {
+            let left = mLefts[i] - 5;
+            let top = mTops[i];
+            let type = _this.mTypes[i];
+            if ( type == 2 && (left + 45 > _this.pLeft) && (left < _this.pLeft + 80) && (top + 50 > _this.pTop) && (top < _this.pTop + 80) ) {
+              _this.handler && window.cancelAnimationFrame(_this.handler);
+            }
+          }
+          // setTimeout(function () {
+          //   _this.run();
+          // }, Math.floor(1000/66));
         },
 
         bind() {
